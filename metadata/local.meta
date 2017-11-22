@@ -1,0 +1,42 @@
+[app/ui]
+version = 7.0.0
+modtime = 1507149547.171664000
+
+[app/launcher]
+version = 7.0.0
+modtime = 1507149547.174569000
+
+[views/tesla_overview]
+owner = admin
+version = 7.0.0
+modtime = 1510152832.350581000
+
+[props/vehicle_list]
+owner = admin
+version = 7.0.0
+modtime = 1507151923.224452000
+
+[nav/default]
+version = 7.0.0
+modtime = 1507287106.810373000
+
+[views/location]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 7.0.0
+modtime = 1510155158.506154000
+
+[views/finance]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 7.0.0
+modtime = 1510152672.960064000
+
+[views/battery_charge]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 7.0.0
+modtime = 1507312167.946314000

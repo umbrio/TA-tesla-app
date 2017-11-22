@@ -1,0 +1,111 @@
+<dashboard>
+  <label>Finance</label>
+  <row>
+    <panel>
+      <title>Total Money saved on Gasoline</title>
+      <single>
+        <search>
+          <query>index=tesla sourcetype="vehicle_state" | rename response.odometer as odometer |eval odometerkmh=odometer*1.6 | stats latest(odometerkmh) as total_km_driven | eval total_price=round(total_km_driven*0.10,2) |eval total_price="€".tostring(total_price,"commas") | table total_price</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0x6db7c6","0xf7bc38","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Total Money Saved Supercharging</title>
+      <single>
+        <search>
+          <query>index=tesla sourcetype="vehicle_charge_state" response.charging_state="Charging" response.fast_charger_type="Tesla" | transaction response.charging_state maxspan=2h maxpause=15m | stats max(response.charge_energy_added) as charge_added by _time | eval total_price=round('charge_added'*0.20,2) | stats sum(total_price) as total_price | rename total_price as "Cost" | table "Cost" | eval Cost="€".tostring(Cost,"commas")</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rangeColors">["0xd93f3c","0x65a637"]</option>
+        <option name="rangeValues">[1]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="useColors">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Total Money Spent charging</title>
+      <single>
+        <search>
+          <query>index=tesla sourcetype="vehicle_charge_state" response.charging_state="Charging" response.fast_charger_type!="Tesla" | transaction response.charging_state maxspan=8h maxpause=50m | stats max(response.charge_energy_added) as charge_added by _time | eval total_price=round('charge_added'*0.20,2) | stats sum(total_price) as total_price | rename total_price as "Cost" | table "Cost" | eval Cost="€".tostring(Cost,"commas")</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Super Charger Sessions</title>
+      <table>
+        <search>
+          <query>index=tesla sourcetype="vehicle_charge_state" response.charging_state="Charging" response.fast_charger_type="Tesla" | transaction response.charging_state maxspan=2h maxpause=15m | stats max(response.charge_energy_added) as charge_added by _time | eval total_price=round('charge_added'*0.0,2) | rename charge_added as "Charge Added",total_price as "Cost" | table _time,"Charge Added","Cost" | addtotals row=f col=t labelfield=_time label="Totals" "Charge Added","Cost" | eval Cost="€".tostring(Cost,"commas")</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Non Super Charger Sessions</title>
+      <table>
+        <search>
+          <query>index=tesla sourcetype="vehicle_charge_state" response.charging_state="Charging" response.fast_charger_type!="Tesla" | transaction response.charging_state maxspan=8h maxpause=50m | stats max(response.charge_energy_added) as charge_added by _time | eval total_price=round('charge_added'*0.20,2) | rename charge_added as "Charge Added",total_price as "Cost" | table _time,"Charge Added","Cost" | addtotals row=f col=t labelfield=_time label="Totals" "Charge Added","Cost" | eval Cost="€".tostring(Cost,"commas")</query>
+          <earliest>0</earliest>
+          <latest></latest>
+          <sampleRatio>1</sampleRatio>
+          <refresh>5m</refresh>
+          <refreshType>delay</refreshType>
+        </search>
+        <option name="count">20</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+      </table>
+    </panel>
+  </row>
+</dashboard>

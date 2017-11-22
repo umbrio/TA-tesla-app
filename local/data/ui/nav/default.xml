@@ -1,0 +1,7 @@
+<nav search_view="search" color="#cc0000">
+  <view name="tesla_overview" default="true" />
+  <view name="location" />
+  <view name="finance" />
+  <view name="battery_charge" />
+  <view name="search" />
+</nav>

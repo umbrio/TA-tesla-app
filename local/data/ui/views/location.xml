@@ -1,0 +1,105 @@
+<form>
+  <label>Location Analyses</label>
+  <fieldset submitButton="false">
+    <input type="time" token="time1">
+      <label>Time Range:</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="state" searchWhenChanged="true">
+      <label>Vehicle State:</label>
+      <search>
+        <query>index=tesla sourcetype="vehicle_drive_state" 
+|eval state=case('response.shift_state' == "D", "Driving", 'response.shift_state' == "null", "Parked", 'response.shift_state' == "P", "Parked", 'response.shift_state' == "R", "In Reverse") 
+|dedup state
+|table state</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <fieldForLabel>state</fieldForLabel>
+      <fieldForValue>state</fieldForValue>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>description="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="checkbox" token="path">
+      <label>Path Lines:</label>
+      <choice value="1">On</choice>
+      <delimiter> </delimiter>
+    </input>
+    <input type="checkbox" token="cluster">
+      <label>Clustered Markings:</label>
+      <choice value="1">Yes</choice>
+      <delimiter> </delimiter>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <viz type="leaflet_maps_app.leaflet_maps">
+        <search>
+          <query>index=tesla sourcetype="vehicle_drive_state"| dedup response.latitude, response.longitude | rename response.latitude as latitude | rename response.longitude as longitude | eval description=case('response.shift_state' == "D", "Driving", 'response.shift_state' == "null", "Parked", 'response.shift_state' == "P", "Parked", 'response.shift_state' == "R", "In Reverse") | eval markerColor=case('description' == "Driving", "red", 'description' == "Parked", "gray", 'description' == "In Reverse", "lightred") | eval icon="car" | search $state$ |table latitude, longitude, markerColor, icon</query>
+          <earliest>$time1.earliest$</earliest>
+          <latest>$time1.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="leaflet_maps_app.leaflet_maps.allPopups">0</option>
+        <option name="leaflet_maps_app.leaflet_maps.animate">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.autoFitAndZoom">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.autoFitAndZoomDelay">500</option>
+        <option name="leaflet_maps_app.leaflet_maps.cluster">$cluster$</option>
+        <option name="leaflet_maps_app.leaflet_maps.contextMenu">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.criticalThreshold">800</option>
+        <option name="leaflet_maps_app.leaflet_maps.defaultHeight">600</option>
+        <option name="leaflet_maps_app.leaflet_maps.drilldown">0</option>
+        <option name="leaflet_maps_app.leaflet_maps.fullScreen">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.googlePlacesApiKey">AIzaSyAVqJ3TACNtOWk1jDavPXBHKQHQWFN2rHI</option>
+        <option name="leaflet_maps_app.leaflet_maps.googlePlacesPosition">topleft</option>
+        <option name="leaflet_maps_app.leaflet_maps.googlePlacesSearch">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.googlePlacesZoomLevel">6</option>
+        <option name="leaflet_maps_app.leaflet_maps.layerControl">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.layerControlCollapsed">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.mapCenterLat">39.50</option>
+        <option name="leaflet_maps_app.leaflet_maps.mapCenterLon">-98.35</option>
+        <option name="leaflet_maps_app.leaflet_maps.mapCenterZoom">6</option>
+        <option name="leaflet_maps_app.leaflet_maps.mapTile">http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png</option>
+        <option name="leaflet_maps_app.leaflet_maps.markerColor">lightred</option>
+        <option name="leaflet_maps_app.leaflet_maps.maxClusterRadius">80</option>
+        <option name="leaflet_maps_app.leaflet_maps.maxSpiderfySize">100</option>
+        <option name="leaflet_maps_app.leaflet_maps.maxZoom">19</option>
+        <option name="leaflet_maps_app.leaflet_maps.measureActiveColor">#00ff00</option>
+        <option name="leaflet_maps_app.leaflet_maps.measureCompletedColor">#0066ff</option>
+        <option name="leaflet_maps_app.leaflet_maps.measureIconPosition">topright</option>
+        <option name="leaflet_maps_app.leaflet_maps.measureLocalization">nl</option>
+        <option name="leaflet_maps_app.leaflet_maps.measurePrimaryAreaUnit">acres</option>
+        <option name="leaflet_maps_app.leaflet_maps.measurePrimaryLengthUnit">feet</option>
+        <option name="leaflet_maps_app.leaflet_maps.measureSecondaryAreaUnit">sqmiles</option>
+        <option name="leaflet_maps_app.leaflet_maps.measureSecondaryLengthUnit">miles</option>
+        <option name="leaflet_maps_app.leaflet_maps.measureTool">0</option>
+        <option name="leaflet_maps_app.leaflet_maps.minZoom">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.multiplePopups">0</option>
+        <option name="leaflet_maps_app.leaflet_maps.pathColorList">#cc0000</option>
+        <option name="leaflet_maps_app.leaflet_maps.permanentTooltip">0</option>
+        <option name="leaflet_maps_app.leaflet_maps.rangeOneBgColor">#cccccc</option>
+        <option name="leaflet_maps_app.leaflet_maps.rangeOneFgColor">#999999</option>
+        <option name="leaflet_maps_app.leaflet_maps.rangeThreeBgColor">#FD9C73</option>
+        <option name="leaflet_maps_app.leaflet_maps.rangeThreeFgColor">#F18017</option>
+        <option name="leaflet_maps_app.leaflet_maps.rangeTwoBgColor">#F1D357</option>
+        <option name="leaflet_maps_app.leaflet_maps.rangeTwoFgColor">#F0C20C</option>
+        <option name="leaflet_maps_app.leaflet_maps.scrollWheelZoom">0</option>
+        <option name="leaflet_maps_app.leaflet_maps.showPathLines">$path$</option>
+        <option name="leaflet_maps_app.leaflet_maps.singleMarkerMode">0</option>
+        <option name="leaflet_maps_app.leaflet_maps.spiderfyDistanceMultiplier">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.stickyTooltip">1</option>
+        <option name="leaflet_maps_app.leaflet_maps.warningThreshold">400</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+</form>
